@@ -1,41 +1,48 @@
 #!/usr/bin/python3
 import pandas as pd
-from docx import Document
 import subprocess
-
-
-def generate_doc(df, filename):
-    d = Document()
-
-    for i, item in df.iterrows():
-        if item.style == 'title':
-            d.add_heading(item.text, 0)
-        elif item.style == 'heading':
-            parts = item.section.split('.')
-            d.add_heading(item.text, len(parts) + 1)
-        elif item.style == 'para':
-            d.add_paragraph(item.text)
-
-    d.save(filename)
 
 
 def load_spreadsheet(filename):
     df = pd.read_excel(filename, dtype={
-        'section': str,
+        'id': str,
         'style': str,
         'text': str,
         'trace': str,
-    })
+    }, usecols=range(4))
 
     df = df.fillna('')
     return df
 
 
+def generate_md(df, filename):
+    with open(filename, 'w') as md:
+        for i, item in df.iterrows():
+            metadata = []
+            if item.id:
+                metadata.append('REQ-' + item.id)
+
+            if item.trace:
+                metadata.append('Trace: ' + item.trace)
+
+            if len(metadata) > 0:
+                metadata_str = ', '.join(metadata)
+                md.write(f'<div custom-style="metadata">{metadata_str}</div>\n\n')
+
+            md.write(item.text + '\n\n')
+
+
+def generate_docx(input_filename, output_filename):
+    subprocess.run(['pandoc', input_filename,
+                    '--reference-doc', 'custom-reference.docx',
+                    '-o', output_filename], check=True)
+
+
 def main():
     df = load_spreadsheet('reqs.xlsx')
-    generate_doc(df, 'output.docx')
-    # subprocess.run(['libreoffice', 'output.docx'], check=True)
-
+    generate_md(df, 'output.md')
+    generate_docx('output.md', 'output.docx')
+    subprocess.run(['libreoffice', 'output.docx'], check=True)
 
 
 if __name__ == '__main__':
