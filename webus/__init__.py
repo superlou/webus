@@ -1,1 +1,1 @@
-from .weebus import command_line
+from .command_line import command_line

@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import pandas as pd
 import subprocess
-import argparse
 
 
 def load_spreadsheet(filename):
@@ -41,20 +40,3 @@ def generate_docx(input_filename, output_filename):
     subprocess.run(['pandoc', input_filename,
                     '--reference-doc', 'custom-reference.docx',
                     '-o', output_filename], check=True)
-
-
-def command_line():
-    parser = argparse.ArgumentParser('webus')
-    parser.add_argument('input')
-    parser.add_argument('-g', '--generate', action='store_true')
-    parser.add_argument('-s', '--show', action='store_true')
-    args = parser.parse_args()
-
-    df = load_spreadsheet(args.input)
-
-    if args.generate:
-        generate_md(df, 'output.md')
-        generate_docx('output.md', 'output.docx')
-
-        if args.show:
-            subprocess.run(['libreoffice', 'output.docx'], check=True)
