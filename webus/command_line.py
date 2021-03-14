@@ -2,7 +2,7 @@ import argparse
 import subprocess
 import os
 import platform
-from .weebus import load_spreadsheet, generate_md, generate_docx
+from .webus import load_spreadsheet, generate_md, generate_docx
 
 
 def open_with_default_app(filename):
