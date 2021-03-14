@@ -40,3 +40,21 @@ def generate_docx(input_filename, output_filename):
     subprocess.run(['pandoc', input_filename,
                     '--reference-doc', 'custom-reference.docx',
                     '-o', output_filename], check=True)
+
+
+def lint_records(df):
+    lints = []
+
+    missing_id = (df.id == '') & df.text.str.contains('shall')
+
+    for i, row in df.loc[missing_id].iterrows():
+        lints.append((i + 2, 'Row contains "shall" with no ID'))
+
+    missing_shall = (df.id != '') & ~df.text.str.contains('shall')
+
+    for i, row in df.loc[missing_shall].iterrows():
+        lints.append((i + 2, 'Row has ID but does not contain "shall"'))
+
+    lints.sort(key=lambda lint: lint[0])
+
+    return lints

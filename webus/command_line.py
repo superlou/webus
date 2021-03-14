@@ -2,7 +2,12 @@ import argparse
 import subprocess
 import os
 import platform
-from .webus import load_spreadsheet, generate_md, generate_docx
+from .webus import load_spreadsheet, generate_md, generate_docx, lint_records
+from rich.console import Console
+
+
+console = Console()
+print = console.print
 
 
 def open_with_default_app(filename):
@@ -14,6 +19,16 @@ def open_with_default_app(filename):
         subprocess.call(('xdg-open', filename))
 
 
+def print_linter_warnings(df):
+    linter_warnings = lint_records(df)
+
+    row_width = max([len(str(warning[0])) for warning in linter_warnings])
+
+    if len(linter_warnings) > 0:
+        for warning in linter_warnings:
+            print(f'[red]{warning[0]:{row_width}} {warning[1]}')
+
+
 def command_line():
     parser = argparse.ArgumentParser('webus')
     parser.add_argument('input')
@@ -22,6 +37,7 @@ def command_line():
     args = parser.parse_args()
 
     df = load_spreadsheet(args.input)
+    print_linter_warnings(df)
 
     if args.generate:
         generate_md(df, 'output.md')
