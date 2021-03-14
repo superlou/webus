@@ -1,6 +1,17 @@
 import argparse
 import subprocess
+import os
+import platform
 from .weebus import load_spreadsheet, generate_md, generate_docx
+
+
+def open_with_default_app(filename):
+    if platform.system() == 'Darwin':
+        subprocess.call(('open', filename))
+    elif platform.system() == 'Windows':
+        os.startfile(filename)
+    else:
+        subprocess.call(('xdg-open', filename))
 
 
 def command_line():
@@ -17,4 +28,4 @@ def command_line():
         generate_docx('output.md', 'output.docx')
 
         if args.show:
-            subprocess.run(['libreoffice', 'output.docx'], check=True)
+            open_with_default_app('output.docx')
