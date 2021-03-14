@@ -1,15 +1,20 @@
 #!/usr/bin/python3
 import pandas as pd
 import subprocess
+import argparse
 
 
 def load_spreadsheet(filename):
-    df = pd.read_excel(filename, dtype={
-        'id': str,
-        'style': str,
-        'text': str,
-        'trace': str,
-    }, usecols=range(4))
+    try:
+        df = pd.read_excel(filename, dtype={
+            'id': str,
+            'style': str,
+            'text': str,
+            'trace': str,
+        }, usecols=range(4))
+    except FileNotFoundError:
+        print(f'Unable to load {filename}')
+        exit()
 
     df = df.fillna('')
     return df
@@ -38,12 +43,18 @@ def generate_docx(input_filename, output_filename):
                     '-o', output_filename], check=True)
 
 
-def main():
-    df = load_spreadsheet('reqs.xlsx')
-    generate_md(df, 'output.md')
-    generate_docx('output.md', 'output.docx')
-    subprocess.run(['libreoffice', 'output.docx'], check=True)
+def command_line():
+    parser = argparse.ArgumentParser('webus')
+    parser.add_argument('input')
+    parser.add_argument('-g', '--generate', action='store_true')
+    parser.add_argument('-s', '--show', action='store_true')
+    args = parser.parse_args()
 
+    df = load_spreadsheet(args.input)
 
-if __name__ == '__main__':
-    main()
+    if args.generate:
+        generate_md(df, 'output.md')
+        generate_docx('output.md', 'output.docx')
+
+        if args.show:
+            subprocess.run(['libreoffice', 'output.docx'], check=True)
