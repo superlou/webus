@@ -1,6 +1,14 @@
 # webus
 
-Requirement tracking tool
+Requirement tracking tool for Microsoft Office or LibreOffice spreadsheets and Python 3.
+
+## Installation
+
+```
+git clone git@github.com:superlou/webus.git
+cd webus
+python3 -m pip install .
+```
 
 ## Examples
 
