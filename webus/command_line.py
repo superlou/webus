@@ -19,6 +19,17 @@ def open_with_default_app(filename):
         subprocess.call(('xdg-open', filename))
 
 
+def print_requirement_stats(df):
+    requirement_count = len(df[df.id != ''])
+    print(f'Requirement count: {requirement_count}')
+
+    try:
+        next_id = int(df[df.id != ''].id.astype(int).max()) + 1
+        print(f'Next available ID: {next_id}')
+    except ValueError:
+        pass
+
+
 def print_linter_warnings(df):
     linter_warnings = lint_records(df)
 
@@ -37,6 +48,7 @@ def command_line():
     args = parser.parse_args()
 
     df = load_spreadsheet(args.input)
+    print_requirement_stats(df)
     print_linter_warnings(df)
 
     if args.generate:
