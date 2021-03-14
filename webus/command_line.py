@@ -37,7 +37,7 @@ def print_linter_warnings(df):
 
     if len(linter_warnings) > 0:
         for warning in linter_warnings:
-            print(f'[red]{warning[0]:{row_width}} {warning[1]}')
+            print(f'{warning[0]:{row_width}} [red]warning[/red] {warning[1]}')
 
 
 def command_line():
@@ -48,6 +48,7 @@ def command_line():
     args = parser.parse_args()
 
     df = load_spreadsheet(args.input)
+    print(f'[underline]{args.input}')
     print_requirement_stats(df)
     print_linter_warnings(df)
 

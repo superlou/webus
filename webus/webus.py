@@ -45,15 +45,22 @@ def generate_docx(input_filename, output_filename):
 def lint_records(df):
     lints = []
 
+    OFFSET = 2
+
     missing_id = (df.id == '') & df.text.str.contains('shall')
 
     for i, row in df.loc[missing_id].iterrows():
-        lints.append((i + 2, 'Row contains "shall" with no ID'))
+        lints.append((i + OFFSET, 'Row contains "shall" with no ID'))
 
     missing_shall = (df.id != '') & ~df.text.str.contains('shall')
 
     for i, row in df.loc[missing_shall].iterrows():
-        lints.append((i + 2, 'Row has ID but does not contain "shall"'))
+        lints.append((i + OFFSET, 'Row has ID but does not contain "shall"'))
+
+    duplicate_id = df.id.duplicated(keep=False) & (df.id != '')
+
+    for i, row in df.loc[duplicate_id].iterrows():
+        lints.append((i + OFFSET, 'ID is not unique'))
 
     lints.sort(key=lambda lint: lint[0])
 
