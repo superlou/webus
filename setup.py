@@ -18,4 +18,10 @@ setuptools.setup(
         'console_scripts': ['webus=webus:command_line'],
     },
     python_requires='>=3.6',
+    install_requires=[
+        'pandas',
+        'xlrd',
+        'openpyxl',
+        'rich',
+    ],
 )
