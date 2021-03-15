@@ -20,7 +20,7 @@ def load_spreadsheet(filename):
 
 
 def generate_md(df, filename):
-    with open(filename, 'w') as md:
+    with open(filename, 'w', encoding='utf8') as md:
         for i, item in df.iterrows():
             metadata = []
             if item.id:
